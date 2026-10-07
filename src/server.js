@@ -29,7 +29,7 @@ setupSwagger(app);
 connectDB();
 
 // Root route kiểm tra trạng thái server
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.json({
     status: "OK",
     message: "Event Rental API Server is running",
