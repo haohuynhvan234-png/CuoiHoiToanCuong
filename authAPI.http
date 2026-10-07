@@ -1,0 +1,81 @@
+﻿### -------------------------------------------------------------------------
+### 1. Đăng ký tài khoản Email/Password (Register)
+### -------------------------------------------------------------------------
+POST http://localhost:3001/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Nguyễn Văn A",
+  "email": "user@example.com",
+  "password": "123456",
+  "age": 22
+}
+
+### -------------------------------------------------------------------------
+### 2. Đăng nhập Email/Password (Login)
+### -------------------------------------------------------------------------
+# @name login
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "123456"
+}
+
+### -------------------------------------------------------------------------
+### 3. GOOGLE LOGIN (Firebase Auth)
+### -------------------------------------------------------------------------
+
+# 3.1. Login bằng Firebase ID Token (Lấy ID Token từ frontend hoặc Firebase CLI)
+POST http://localhost:3001/api/auth/google-login
+Content-Type: application/json
+
+{
+  "idToken": "PASTE_FIREBASE_ID_TOKEN_HERE"
+}
+
+### 3.2. Thiếu idToken -> mong đợi 400
+POST http://localhost:3001/api/auth/google-login
+Content-Type: application/json
+
+{
+}
+
+### 3.3. idToken không hợp lệ / giả mạo -> mong đợi 401
+POST http://localhost:3001/api/auth/google-login
+Content-Type: application/json
+
+{
+  "idToken": "fake_token_123456"
+}
+
+### -------------------------------------------------------------------------
+### 4. Lấy thông tin người dùng hiện tại (/me)
+### -------------------------------------------------------------------------
+@token = {{login.response.body.token}}
+GET http://localhost:3001/api/auth/me
+Authorization: Bearer {{token}}
+
+### -------------------------------------------------------------------------
+### 5. Đổi mật khẩu (Change Password)
+### -------------------------------------------------------------------------
+PUT http://localhost:3001/api/auth/change-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "oldPassword": "123456",
+  "newPassword": "new123456"
+}
+
+### -------------------------------------------------------------------------
+### 6. Test RBAC - Gọi trang Admin bằng tài khoản User (Mong đợi: 403 Forbidden)
+### -------------------------------------------------------------------------
+GET http://localhost:3001/api/auth/admin/dashboard
+Authorization: Bearer {{token}}
+
+### -------------------------------------------------------------------------
+### 7. Đăng xuất (Logout)
+### -------------------------------------------------------------------------
+POST http://localhost:3001/api/auth/logout

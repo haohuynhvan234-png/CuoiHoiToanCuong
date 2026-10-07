@@ -1,0 +1,2608 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Event Rental API Documentation",
+    "version": "1.0.0",
+    "description": "API Documentation cho hệ thống cho thuê bàn ghế, rạp và phụ kiện sự kiện (Cưới Hỏi Toàn Cường)",
+    "contact": {
+      "name": "API Support"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001/api",
+      "description": "Development Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Nhập JWT token theo cú pháp: Bearer <token>"
+      }
+    },
+    "schemas": {
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Thao tác thành công"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Thông báo lỗi chi tiết"
+          }
+        }
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "email"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Nguyễn Văn A"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "nguyenvana@example.com"
+          },
+          "age": {
+            "type": "integer",
+            "default": 18,
+            "example": 22
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Nguyễn Văn A (Updated)"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "nguyenvana_new@example.com"
+          },
+          "age": {
+            "type": "integer",
+            "example": 25
+          }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6639bfa923e41a1234567890"
+          },
+          "name": {
+            "type": "string",
+            "example": "Nguyễn Văn A"
+          },
+          "email": {
+            "type": "string",
+            "example": "nguyenvana@example.com"
+          },
+          "age": {
+            "type": "integer",
+            "example": 22
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-07T08:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-07T08:00:00.000Z"
+          }
+        }
+      },
+      "RentalItemInput": {
+        "type": "object",
+        "required": [
+          "product",
+          "quantity",
+          "price"
+        ],
+        "properties": {
+          "product": {
+            "type": "string",
+            "description": "MongoDB ObjectId của Product",
+            "example": "6639c12b23e41a1234567892"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 50
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0,
+            "example": 45000
+          }
+        }
+      },
+      "RentalItemPopulated": {
+        "type": "object",
+        "properties": {
+          "product": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "6639c12b23e41a1234567892"
+              },
+              "name": {
+                "type": "string",
+                "example": "Ghế Tiffany Vàng Gold"
+              },
+              "pricePerDay": {
+                "type": "number",
+                "example": 45000
+              },
+              "quantity": {
+                "type": "integer",
+                "example": 200
+              },
+              "image": {
+                "type": "string",
+                "example": "https://example.com/images/ghe-tiffany.jpg"
+              },
+              "location": {
+                "type": "string",
+                "example": "Kho Quận 7, TP.HCM"
+              }
+            }
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 50
+          },
+          "price": {
+            "type": "number",
+            "example": 45000
+          }
+        }
+      },
+      "CreateRentalRequest": {
+        "type": "object",
+        "required": [
+          "customerName",
+          "phone",
+          "address",
+          "eventDate",
+          "returnDate",
+          "products",
+          "totalPrice"
+        ],
+        "properties": {
+          "customerName": {
+            "type": "string",
+            "example": "Trần Thị B"
+          },
+          "phone": {
+            "type": "string",
+            "example": 901234567
+          },
+          "address": {
+            "type": "string",
+            "example": "123 Nguyễn Hữu Thọ, Tân Phong, Quận 7, TP.HCM"
+          },
+          "eventDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-20T08:00:00.000Z"
+          },
+          "returnDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-22T18:00:00.000Z"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RentalItemInput"
+            }
+          },
+          "totalPrice": {
+            "type": "number",
+            "minimum": 0,
+            "example": 2250000
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "delivered",
+              "returned",
+              "cancelled"
+            ],
+            "default": "pending",
+            "example": "pending"
+          },
+          "note": {
+            "type": "string",
+            "example": "Giao đồ trước 7h sáng ngày 20/11"
+          }
+        }
+      },
+      "UpdateRentalRequest": {
+        "type": "object",
+        "properties": {
+          "customerName": {
+            "type": "string",
+            "example": "Trần Thị B"
+          },
+          "phone": {
+            "type": "string",
+            "example": 901234567
+          },
+          "address": {
+            "type": "string",
+            "example": "123 Nguyễn Hữu Thọ, Tân Phong, Quận 7, TP.HCM"
+          },
+          "eventDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-20T08:00:00.000Z"
+          },
+          "returnDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-22T18:00:00.000Z"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RentalItemInput"
+            }
+          },
+          "totalPrice": {
+            "type": "number",
+            "minimum": 0,
+            "example": 2250000
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "delivered",
+              "returned",
+              "cancelled"
+            ],
+            "example": "confirmed"
+          },
+          "note": {
+            "type": "string",
+            "example": "Đã đặt cọc 50% tiền mặt"
+          }
+        }
+      },
+      "RentalResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6639c25f23e41a1234567893"
+          },
+          "customerName": {
+            "type": "string",
+            "example": "Trần Thị B"
+          },
+          "phone": {
+            "type": "string",
+            "example": 901234567
+          },
+          "address": {
+            "type": "string",
+            "example": "123 Nguyễn Hữu Thọ, Tân Phong, Quận 7, TP.HCM"
+          },
+          "eventDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-20T08:00:00.000Z"
+          },
+          "returnDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-22T18:00:00.000Z"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RentalItemInput"
+            }
+          },
+          "totalPrice": {
+            "type": "number",
+            "example": 2250000
+          },
+          "status": {
+            "type": "string",
+            "example": "pending"
+          },
+          "note": {
+            "type": "string",
+            "example": "Giao đồ trước 7h sáng ngày 20/11"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RentalPopulatedResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6639c25f23e41a1234567893"
+          },
+          "customerName": {
+            "type": "string",
+            "example": "Trần Thị B"
+          },
+          "phone": {
+            "type": "string",
+            "example": 901234567
+          },
+          "address": {
+            "type": "string",
+            "example": "123 Nguyễn Hữu Thọ, Tân Phong, Quận 7, TP.HCM"
+          },
+          "eventDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-20T08:00:00.000Z"
+          },
+          "returnDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-11-22T18:00:00.000Z"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RentalItemPopulated"
+            }
+          },
+          "totalPrice": {
+            "type": "number",
+            "example": 2250000
+          },
+          "status": {
+            "type": "string",
+            "example": "confirmed"
+          },
+          "note": {
+            "type": "string",
+            "example": "Đã đặt cọc 50% tiền mặt"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateProductRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "pricePerDay",
+          "quantity",
+          "category"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Ghế Tiffany Vàng Gold"
+          },
+          "description": {
+            "type": "string",
+            "example": "Ghế tiffany kèm nệm da trắng sang trọng cho tiệc cưới"
+          },
+          "pricePerDay": {
+            "type": "number",
+            "minimum": 0,
+            "example": 45000
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 200
+          },
+          "image": {
+            "type": "string",
+            "example": "https://example.com/images/ghe-tiffany.jpg"
+          },
+          "location": {
+            "type": "string",
+            "example": "Kho Quận 7, TP.HCM"
+          },
+          "category": {
+            "type": "string",
+            "description": "MongoDB ObjectId của Category (Lưu ý tạo Category trước rồi dán ID thật vào đây)",
+            "example": "6639c01a23e41a1234567891"
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "default": true,
+            "example": true
+          }
+        }
+      },
+      "UpdateProductRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Ghế Tiffany Vàng Gold (Mới)"
+          },
+          "description": {
+            "type": "string",
+            "example": "Ghế tiffany kèm nệm da trắng đã được bảo dưỡng mới"
+          },
+          "pricePerDay": {
+            "type": "number",
+            "minimum": 0,
+            "example": 50000
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 180
+          },
+          "image": {
+            "type": "string",
+            "example": "https://example.com/images/ghe-tiffany-2.jpg"
+          },
+          "location": {
+            "type": "string",
+            "example": "Kho Thủ Đức, TP.HCM"
+          },
+          "category": {
+            "type": "string",
+            "description": "MongoDB ObjectId của Category",
+            "example": "6639c01a23e41a1234567891"
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "ProductDetailResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6639c12b23e41a1234567892"
+          },
+          "name": {
+            "type": "string",
+            "example": "Ghế Tiffany Vàng Gold"
+          },
+          "description": {
+            "type": "string",
+            "example": "Ghế tiffany kèm nệm da trắng sang trọng cho tiệc cưới"
+          },
+          "pricePerDay": {
+            "type": "number",
+            "example": 45000
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 200
+          },
+          "image": {
+            "type": "string",
+            "example": "https://example.com/images/ghe-tiffany.jpg"
+          },
+          "location": {
+            "type": "string",
+            "example": "Kho Quận 7, TP.HCM"
+          },
+          "category": {
+            "type": "string",
+            "example": "6639c01a23e41a1234567891"
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-07T08:15:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-07T08:15:00.000Z"
+          }
+        }
+      },
+      "ProductPopulatedResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6639c12b23e41a1234567892"
+          },
+          "name": {
+            "type": "string",
+            "example": "Ghế Tiffany Vàng Gold"
+          },
+          "description": {
+            "type": "string",
+            "example": "Ghế tiffany kèm nệm da trắng sang trọng cho tiệc cưới"
+          },
+          "pricePerDay": {
+            "type": "number",
+            "example": 45000
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 200
+          },
+          "image": {
+            "type": "string",
+            "example": "https://example.com/images/ghe-tiffany.jpg"
+          },
+          "location": {
+            "type": "string",
+            "example": "Kho Quận 7, TP.HCM"
+          },
+          "category": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "6639c01a23e41a1234567891"
+              },
+              "name": {
+                "type": "string",
+                "example": "Bàn ghế sự kiện"
+              },
+              "description": {
+                "type": "string",
+                "example": "Các loại bàn ghế banquet, tiffany"
+              }
+            }
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-07T08:15:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-07T08:15:00.000Z"
+          }
+        }
+      },
+      "CreateCategoryRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Bàn ghế sự kiện"
+          },
+          "description": {
+            "type": "string",
+            "example": "Các loại bàn ghế banquet, tiffany, ghế đẩu"
+          }
+        }
+      },
+      "UpdateCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Bàn ghế sự kiện cao cấp"
+          },
+          "description": {
+            "type": "string",
+            "example": "Bàn ghế banquet bọc nơ, bàn tròn xoay cao cấp"
+          }
+        }
+      },
+      "CategoryResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6639c01a23e41a1234567891"
+          },
+          "name": {
+            "type": "string",
+            "example": "Bàn ghế sự kiện"
+          },
+          "description": {
+            "type": "string",
+            "example": "Các loại bàn ghế banquet, tiffany, ghế đẩu"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-07T08:10:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-07T08:10:00.000Z"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Nguyễn Văn A"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 6,
+            "example": "123456"
+          },
+          "age": {
+            "type": "integer",
+            "default": 18,
+            "example": 22
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "123456"
+          }
+        }
+      },
+      "GoogleLoginRequest": {
+        "type": "object",
+        "required": [
+          "idToken"
+        ],
+        "properties": {
+          "idToken": {
+            "type": "string",
+            "description": "Firebase ID Token nhận được từ Firebase Client SDK (signInWithPopup)",
+            "example": "eyJhbGciOiJSUzI1NiIsImtpZCI6..."
+          }
+        }
+      },
+      "ChangePasswordRequest": {
+        "type": "object",
+        "required": [
+          "oldPassword",
+          "newPassword"
+        ],
+        "properties": {
+          "oldPassword": {
+            "type": "string",
+            "format": "password",
+            "example": "123456"
+          },
+          "newPassword": {
+            "type": "string",
+            "format": "password",
+            "minLength": 6,
+            "example": "new123456"
+          }
+        }
+      },
+      "AuthUserResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6639bfa923e41a1234567890"
+          },
+          "name": {
+            "type": "string",
+            "example": "Nguyễn Văn A"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ],
+            "example": "user"
+          },
+          "authType": {
+            "type": "string",
+            "enum": [
+              "local",
+              "google"
+            ],
+            "example": "google"
+          },
+          "avatar": {
+            "type": "string",
+            "example": "https://lh3.googleusercontent.com/a/..."
+          },
+          "googleId": {
+            "type": "string",
+            "example": "460208525909"
+          },
+          "age": {
+            "type": "integer",
+            "example": 22
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AuthErrorContract": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Email hoặc mật khẩu không đúng"
+          },
+          "error": {
+            "type": "string",
+            "example": "Unauthorized"
+          },
+          "statusCode": {
+            "type": "integer",
+            "example": 401
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/users": {
+      "post": {
+        "summary": "Tạo người dùng mới",
+        "tags": [
+          "Users"
+        ],
+        "description": "Thêm mới một User vào hệ thống. Email phải là duy nhất.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              },
+              "example": {
+                "name": "Nguyễn Văn A",
+                "email": "nguyenvana@example.com",
+                "age": 22
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo người dùng thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UserResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server (trùng email hoặc lỗi mongoose)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Lấy danh sách tất cả người dùng",
+        "tags": [
+          "Users"
+        ],
+        "description": "Trả về danh sách tất cả người dùng trong hệ thống.",
+        "responses": {
+          "200": {
+            "description": "Danh sách users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserResponse"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Lấy thông tin chi tiết một User",
+        "tags": [
+          "Users"
+        ],
+        "description": "Lấy chi tiết user thông qua ObjectId.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId của User",
+            "schema": {
+              "type": "string",
+              "example": "6639bfa923e41a1234567890"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tìm thấy user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy User",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                },
+                "example": {
+                  "message": "Không tìm thấy"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Cập nhật thông tin User",
+        "tags": [
+          "Users"
+        ],
+        "description": "Cập nhật thông tin của User theo ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId của User",
+            "schema": {
+              "type": "string",
+              "example": "6639bfa923e41a1234567890"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              },
+              "example": {
+                "name": "Nguyễn Văn A (Updated)",
+                "age": 25
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Xóa User",
+        "tags": [
+          "Users"
+        ],
+        "description": "Xóa vĩnh viễn user khỏi cơ sở dữ liệu.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId của User",
+            "schema": {
+              "type": "string",
+              "example": "6639bfa923e41a1234567890"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                },
+                "example": {
+                  "message": "Đã xóa"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rentals": {
+      "post": {
+        "summary": "Tạo đơn thuê mới",
+        "tags": [
+          "Rentals"
+        ],
+        "description": "Tạo một đơn đặt thuê thiết bị sự kiện. Hệ thống sẽ tự động xác minh từng ID sản phẩm tồn tại trước khi tạo đơn.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRentalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo đơn thuê thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Tạo đơn thuê thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RentalResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Thiếu thông tin bắt buộc hoặc ID sản phẩm không tồn tại",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Lấy danh sách tất cả đơn thuê",
+        "tags": [
+          "Rentals"
+        ],
+        "description": "Trả về toàn bộ danh sách đơn thuê với thông tin sản phẩm được populate đầy đủ.",
+        "responses": {
+          "200": {
+            "description": "Lấy danh sách thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Lấy danh sách đơn thuê thành công"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RentalPopulatedResponse"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rentals/{id}": {
+      "get": {
+        "summary": "Lấy chi tiết đơn thuê",
+        "tags": [
+          "Rentals"
+        ],
+        "description": "Lấy thông tin chi tiết một đơn thuê theo ID kèm thông tin sản phẩm populate.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId của đơn thuê",
+            "schema": {
+              "type": "string",
+              "example": "6639c25f23e41a1234567893"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lấy chi tiết đơn thuê thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Lấy chi tiết đơn thuê thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RentalPopulatedResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID đơn thuê không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy đơn thuê",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Cập nhật đơn thuê / trạng thái đơn thuê",
+        "tags": [
+          "Rentals"
+        ],
+        "description": "Cập nhật thông tin chi tiết hoặc trạng thái của đơn thuê (pending, confirmed, delivered, returned, cancelled).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId của đơn thuê",
+            "schema": {
+              "type": "string",
+              "example": "6639c25f23e41a1234567893"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRentalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật đơn thuê thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Cập nhật đơn thuê thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RentalPopulatedResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu cập nhật hoặc ID không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy đơn thuê",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Xóa đơn thuê",
+        "tags": [
+          "Rentals"
+        ],
+        "description": "Xóa vĩnh viễn đơn thuê theo ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId của đơn thuê",
+            "schema": {
+              "type": "string",
+              "example": "6639c25f23e41a1234567893"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa đơn thuê thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Xóa đơn thuê thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RentalResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy đơn thuê",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products": {
+      "post": {
+        "summary": "Tạo sản phẩm mới",
+        "tags": [
+          "Products"
+        ],
+        "description": "Thêm mới sản phẩm thiết bị sự kiện. Bắt buộc Category ID phải là ID thật đã tồn tại trong database (Tạo ở /api/categories trước).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo sản phẩm thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Tạo sản phẩm thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ProductDetailResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Thiếu thông tin bắt buộc hoặc dữ liệu không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category ID không tồn tại trong CSDL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                },
+                "example": {
+                  "message": "Category ID không tồn tại"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Lấy danh sách sản phẩm (có tìm kiếm và lọc)",
+        "tags": [
+          "Products"
+        ],
+        "description": "Lấy danh sách sản phẩm có hỗ trợ tìm kiếm tên, lọc theo category, tình trạng có sẵn và khoảng giá thuê/ngày.",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Tìm kiếm gần đúng theo tên sản phẩm",
+            "schema": {
+              "type": "string",
+              "example": "Tiffany"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "description": "Lọc theo Category ObjectId",
+            "schema": {
+              "type": "string",
+              "example": "6639c01a23e41a1234567891"
+            }
+          },
+          {
+            "name": "isAvailable",
+            "in": "query",
+            "required": false,
+            "description": "Lọc theo trạng thái còn hàng",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "required": false,
+            "description": "Giá thuê tối thiểu / ngày",
+            "schema": {
+              "type": "number",
+              "example": 30000
+            }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "required": false,
+            "description": "Giá thuê tối đa / ngày",
+            "schema": {
+              "type": "number",
+              "example": 100000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lấy danh sách sản phẩm thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Lấy danh sách sản phẩm thành công"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ProductPopulatedResponse"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Category ID lọc không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "summary": "Lấy chi tiết sản phẩm",
+        "tags": [
+          "Products"
+        ],
+        "description": "Lấy thông tin chi tiết một sản phẩm theo ID kèm Category populate.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId của sản phẩm",
+            "schema": {
+              "type": "string",
+              "example": "6639c12b23e41a1234567892"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lấy chi tiết sản phẩm thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Lấy chi tiết sản phẩm thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ProductPopulatedResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID sản phẩm không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy sản phẩm",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Cập nhật sản phẩm",
+        "tags": [
+          "Products"
+        ],
+        "description": "Chỉnh sửa thông tin sản phẩm theo ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId của sản phẩm",
+            "schema": {
+              "type": "string",
+              "example": "6639c12b23e41a1234567892"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật sản phẩm thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Cập nhật sản phẩm thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ProductPopulatedResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID hoặc thông tin cập nhật không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy sản phẩm hoặc Category ID không tồn tại",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Xóa sản phẩm",
+        "tags": [
+          "Products"
+        ],
+        "description": "Xóa vĩnh viễn một sản phẩm theo ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId của sản phẩm",
+            "schema": {
+              "type": "string",
+              "example": "6639c12b23e41a1234567892"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa sản phẩm thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Xóa sản phẩm thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ProductDetailResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy sản phẩm",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories": {
+      "post": {
+        "summary": "Tạo danh mục mới",
+        "tags": [
+          "Categories"
+        ],
+        "description": "Thêm mới một danh mục sản phẩm. Tên danh mục không được để trống hoặc trùng lặp.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryRequest"
+              },
+              "example": {
+                "name": "Bàn ghế sự kiện",
+                "description": "Các loại bàn ghế banquet, tiffany, ghế đẩu"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo danh mục thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Tạo danh mục thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/CategoryResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Tên danh mục bị bỏ trống hoặc đã tồn tại",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Lấy danh sách tất cả danh mục",
+        "tags": [
+          "Categories"
+        ],
+        "description": "Trả về danh sách danh mục kèm số lượng tổng cộng.",
+        "responses": {
+          "200": {
+            "description": "Lấy danh sách thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Lấy danh sách danh mục thành công"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "example": 3
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CategoryResponse"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/{id}": {
+      "get": {
+        "summary": "Lấy chi tiết danh mục theo ID",
+        "tags": [
+          "Categories"
+        ],
+        "description": "Lấy chi tiết thông tin danh mục theo ObjectId.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId của danh mục",
+            "schema": {
+              "type": "string",
+              "example": "6639c01a23e41a1234567891"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lấy chi tiết thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Lấy chi tiết danh mục thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/CategoryResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy danh mục",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Cập nhật thông tin danh mục",
+        "tags": [
+          "Categories"
+        ],
+        "description": "Cập nhật tên hoặc mô tả danh mục.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId của danh mục",
+            "schema": {
+              "type": "string",
+              "example": "6639c01a23e41a1234567891"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryRequest"
+              },
+              "example": {
+                "name": "Bàn ghế sự kiện cao cấp",
+                "description": "Bàn ghế banquet bọc nơ, bàn tròn xoay cao cấp"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Cập nhật danh mục thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/CategoryResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID không hợp lệ hoặc trùng tên danh mục",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy danh mục",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Xóa danh mục",
+        "tags": [
+          "Categories"
+        ],
+        "description": "Xóa vĩnh viễn một danh mục khỏi hệ thống.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId của danh mục",
+            "schema": {
+              "type": "string",
+              "example": "6639c01a23e41a1234567891"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Xóa danh mục thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/CategoryResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy danh mục",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Đăng ký tài khoản người dùng mới",
+        "tags": [
+          "Auth"
+        ],
+        "description": "Tạo tài khoản mới, password được hash bảo mật bằng bcrypt, role mặc định là user.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Đăng ký thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Đăng ký tài khoản thành công"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/AuthUserResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ hoặc thiếu trường",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email đã được đăng ký",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                },
+                "example": {
+                  "message": "Email đã được đăng ký",
+                  "error": "Conflict",
+                  "statusCode": 409
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Đăng nhập bằng Email/Password",
+        "tags": [
+          "Auth"
+        ],
+        "description": "Xác thực người dùng bằng email và mật khẩu. Trả về Bearer Token hết hạn sau 1 ngày.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Đăng nhập thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Đăng nhập thành công"
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/AuthUserResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Thiếu email hoặc mật khẩu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sai email hoặc mật khẩu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                },
+                "example": {
+                  "message": "Email hoặc mật khẩu không đúng",
+                  "error": "Unauthorized",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/google-login": {
+      "post": {
+        "summary": "Đăng nhập bằng Google Firebase",
+        "tags": [
+          "Auth"
+        ],
+        "description": "Nhận Firebase idToken từ Client, xác thực qua Firebase Admin SDK, tự động liên kết/tạo tài khoản MongoDB và cấp phát System JWT.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleLoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Đăng nhập Google thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Đăng nhập Google thành công"
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/AuthUserResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Thiếu idToken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                },
+                "example": {
+                  "message": "idToken là bắt buộc",
+                  "error": "BadRequest",
+                  "statusCode": 400
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "idToken Firebase không hợp lệ hoặc đã hết hạn",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                },
+                "example": {
+                  "message": "Firebase idToken không hợp lệ hoặc đã hết hạn",
+                  "error": "Unauthorized",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server hoặc Firebase Admin SDK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Lấy thông tin tài khoản đang đăng nhập",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Yêu cầu JWT token ở Authorization header.",
+        "responses": {
+          "200": {
+            "description": "Lấy thông tin thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Lấy thông tin người dùng thành công"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/AuthUserResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa xác thực hoặc token không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/change-password": {
+      "put": {
+        "summary": "Đổi mật khẩu",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Đổi mật khẩu cho người dùng hiện tại (cần xác thực oldPassword).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Đổi mật khẩu thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Đổi mật khẩu thành công"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Mật khẩu cũ không đúng hoặc mật khẩu mới quá ngắn",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa xác thực token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Đăng xuất tài khoản",
+        "tags": [
+          "Auth"
+        ],
+        "description": "Phản hồi xác nhận để client xóa JWT Token khỏi LocalStorage/Cookies.",
+        "responses": {
+          "200": {
+            "description": "Đăng xuất thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Đăng xuất thành công. Vui lòng xóa token ở phía client."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/admin/dashboard": {
+      "get": {
+        "summary": "Dashboard quản trị (Test Role RBAC)",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Chỉ tài khoản có role = 'admin' mới được phép truy cập. Role 'user' sẽ trả về 403 Forbidden.",
+        "responses": {
+          "200": {
+            "description": "Truy cập thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Chào mừng Admin đến với trang quản trị"
+                    },
+                    "admin": {
+                      "$ref": "#/components/schemas/AuthUserResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa đăng nhập hoặc token sai",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không đủ quyền truy cập (không phải Admin)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorContract"
+                },
+                "example": {
+                  "message": "Bạn không có quyền truy cập tài nguyên này",
+                  "error": "Forbidden",
+                  "statusCode": 403
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Quản lý người dùng hệ thống"
+    },
+    {
+      "name": "Rentals",
+      "description": "Quản lý đơn thuê thiết bị sự kiện"
+    },
+    {
+      "name": "Products",
+      "description": "Quản lý thiết bị / sản phẩm sự kiện"
+    },
+    {
+      "name": "Categories",
+      "description": "Quản lý danh mục sản phẩm sự kiện"
+    },
+    {
+      "name": "Auth",
+      "description": "Xác thực, đăng ký, đăng nhập (Local & Google Firebase) và phân quyền RBAC"
+    }
+  ]
+}

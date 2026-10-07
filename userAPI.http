@@ -1,0 +1,27 @@
+﻿### 1. Tạo mới User
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "age": 20
+}
+
+### 2. Lấy danh sách tất cả Users
+GET http://localhost:3001/api/users
+
+### 3. Lấy chi tiết 1 User theo ID
+GET http://localhost:3001/api/users/USER_ID_O_DAY
+
+### 4. Cập nhật thông tin User
+PUT http://localhost:3001/api/users/USER_ID_O_DAY
+Content-Type: application/json
+
+{
+  "name": "John Doe Updated",
+  "age": 25
+}
+
+### 5. Xóa User
+DELETE http://localhost:3001/api/users/USER_ID_O_DAY
